@@ -1,3 +1,6 @@
+#Remove test folder as it could contain sensible data
+/test
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
