@@ -1,5 +1,9 @@
+.DS_Store
+
 #Remove test folder as it could contain sensible data
 /test
+/data/roms
+/data/previews
 
 # Binaries for programs and plugins
 *.exe

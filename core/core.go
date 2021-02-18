@@ -7,12 +7,19 @@ import (
 	"strings"
 )
 
+// COPY_DIR is the folder in roms to cleaned roms if copy mode is enabled
+const COPY_DIR string = "cleaned"
+
+// IMAGE_DIR is the folder in roms to store images
+const IMAGE_DIR string = "images"
+
 // Options defines global cleaner options
 type Options struct {
 	Region      Region
 	System      System
 	ImagesDir   string
 	RomsDir     string
+	CleanedDir  string
 	KeepClones  bool
 	CopyMode    bool
 	FailOnError bool
@@ -93,6 +100,16 @@ var Systems = []System{
 	{"zxspectrum"},
 }
 
+// Game keeps current state of a rom treatement
+type Game struct {
+	Title       string
+	Source      string
+	Destination string
+	Image       string
+	Warnings    []error
+	Errors      []error
+}
+
 func init() {
 	sort.Slice(Systems, func(i, j int) bool {
 		return strings.Compare(Systems[i].ID, Systems[j].ID) < 0
@@ -133,10 +150,4 @@ func GetSystem(keyOrPath string) (System, error) {
 	}
 
 	return System{}, fmt.Errorf("system %s not found", key)
-}
-
-// Clean in the main entry API point module
-func Clean(options Options) error {
-	fmt.Println(options)
-	return nil
 }

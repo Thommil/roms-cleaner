@@ -6,7 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/thommil/roms-cleaner/cleaner"
 	"github.com/thommil/roms-cleaner/core"
+	"github.com/thommil/roms-cleaner/scanner"
 )
 
 func usage() {
@@ -86,7 +88,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = core.Clean(core.Options{
+	// Init options & game list
+	options := core.Options{
 		Region:      region,
 		System:      system,
 		ImagesDir:   imagesDir,
@@ -94,10 +97,18 @@ func main() {
 		KeepClones:  *keepClones,
 		CopyMode:    *copyMode,
 		FailOnError: *failOnError,
-	})
+	}
+	games := make([]core.Game, 1000)
 
-	if err != nil {
+	// Scan
+	if err = scanner.Scan(options, games); err != nil {
 		fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
 		os.Exit(2)
+	}
+
+	// Clean
+	if err = cleaner.Clean(options, games); err != nil {
+		fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
+		os.Exit(3)
 	}
 }
