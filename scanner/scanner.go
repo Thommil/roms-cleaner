@@ -1,14 +1,10 @@
 package scanner
 
 import (
-	"embed"
 	"fmt"
 
 	"github.com/thommil/roms-cleaner/core"
 )
-
-// go:embed embed
-var embeddedFS embed.FS
 
 type manager struct {
 	scanners map[string]Scanner
@@ -29,11 +25,16 @@ type Scanner interface {
 
 // Scan is the main entry point for scanner package
 func Scan(options core.Options, games []core.Game) error {
-	scanner, found := instance.scanners[options.System.ID]
-
-	if !found {
-		return fmt.Errorf("scanner for system %s not found", options.System.ID)
+	if options.System.Scanners == nil || len(options.System.Scanners) == 0 {
+		return fmt.Errorf("system %s not yet supported", options.System.ID)
 	}
 
-	return scanner.Scan(options, games)
+	// scanner, found := instance.scanners[options.System.ID]
+
+	// if !found {
+	// 	return fmt.Errorf("scanner for system %s not found", options.System.ID)
+	// }
+
+	// return scanner.Scan(options, games)
+	return nil
 }

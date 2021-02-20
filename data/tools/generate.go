@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/thommil/roms-cleaner/scanner"
+	"github.com/thommil/roms-cleaner/core"
 )
 
 func zipFiles(filename string, files []string) error {
@@ -68,7 +68,7 @@ func generateDats(folder string) error {
 	err := filepath.WalkDir(folder, func(path string, d fs.DirEntry, err error) error {
 		if d.Type().IsRegular() && filepath.Ext(d.Name()) == ".dat" {
 			fmt.Printf("  -> DAT File found: %s\n", path)
-			var dat scanner.DAT
+			var dat core.DAT
 			if data, err := os.ReadFile(path); err != nil {
 				return err
 			} else {

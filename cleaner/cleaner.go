@@ -9,6 +9,12 @@ import (
 	"github.com/thommil/roms-cleaner/core"
 )
 
+// COPY_DIR is the folder in roms to cleaned roms if copy mode is enabled
+const COPY_DIR string = "cleaned"
+
+// IMAGE_DIR is the folder in roms to store images
+const IMAGE_DIR string = "images"
+
 type manager struct {
 	cleaners map[string]Cleaner
 }

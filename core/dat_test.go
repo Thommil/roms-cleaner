@@ -1,55 +1,38 @@
-package scanner
+package core
 
 import (
 	"os"
 	"testing"
 )
 
-// func BenchmarkGetGame(b *testing.B) {
-// 	data, err := os.ReadFile("../test/dats/arcade.dat")
+func TestDAT_FromMemory(t *testing.T) {
+	var dat DAT
+	var err error
 
-// 	if err != nil {
-// 		b.Errorf("error = %v", err)
-// 		return
-// 	}
+	t.Run("load bad system", func(t *testing.T) {
+		err = dat.FromMemory("foo")
 
-// 	dat, err := ParseDAT(data)
+		if err == nil {
+			t.Errorf("FromMemory() error should not be nil")
+			return
+		}
+	})
 
-// 	if err != nil {
-// 		b.Errorf("ParseDAT() error = %v", err)
-// 		return
-// 	}
-// 	for i := 0; i < b.N; i++ {
-// 		search := "mrdobl"
+	t.Run("load system", func(t *testing.T) {
+		err = dat.FromMemory("arcade")
 
-// 		for _, game := range dat.Games {
-// 			if game.Name == search {
-// 				break
-// 			}
-// 		}
-// 	}
-// }
+		if err != nil {
+			t.Errorf("FromMemory() error = %v", err)
+			return
+		}
 
-// func BenchmarkGetGameFromCache(b *testing.B) {
-// 	data, err := os.ReadFile("../test/dats/arcade.dat")
+		if len(dat.Games) == 0 {
+			t.Errorf("FromMemory() empty games list")
+			return
+		}
 
-// 	if err != nil {
-// 		b.Errorf("error = %v", err)
-// 		return
-// 	}
-
-// 	dat, err := ParseDAT(data)
-
-// 	if err != nil {
-// 		b.Errorf("ParseDAT() error = %v", err)
-// 		return
-// 	}
-// 	for i := 0; i < b.N; i++ {
-// 		search := "mrdobl"
-
-// 		dat.GetGame(search)
-// 	}
-// }
+	})
+}
 
 func TestDAT_FromXML(t *testing.T) {
 	var dat DAT
@@ -71,7 +54,7 @@ func TestDAT_FromXML(t *testing.T) {
 		data, err = os.ReadFile("../data/dats/arcade.dat")
 
 		if err != nil {
-			t.Errorf("FromXML() init error = %v", err)
+			t.Errorf("FromXML() read error = %v", err)
 			return
 		}
 
@@ -95,11 +78,11 @@ func TestDAT_Serialize(t *testing.T) {
 	var data []byte
 	var err error
 
-	t.Run("init from XML", func(t *testing.T) {
+	t.Run("init", func(t *testing.T) {
 		data, err = os.ReadFile("../data/dats/arcade.dat")
 
 		if err != nil {
-			t.Errorf("FromXML() init error = %v", err)
+			t.Errorf("FromXML() error = %v", err)
 			return
 		}
 
@@ -212,3 +195,28 @@ func TestDAT_Deserialize(t *testing.T) {
 
 	})
 }
+
+// func BenchmarkGetGame(b *testing.B) {
+// 	data, err := os.ReadFile("../test/dats/arcade.dat")
+
+// 	if err != nil {
+// 		b.Errorf("error = %v", err)
+// 		return
+// 	}
+
+// 	dat, err := ParseDAT(data)
+
+// 	if err != nil {
+// 		b.Errorf("ParseDAT() error = %v", err)
+// 		return
+// 	}
+// 	for i := 0; i < b.N; i++ {
+// 		search := "mrdobl"
+
+// 		for _, game := range dat.Games {
+// 			if game.Name == search {
+// 				break
+// 			}
+// 		}
+// 	}
+// }
