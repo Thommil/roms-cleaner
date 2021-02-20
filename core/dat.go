@@ -3,7 +3,8 @@ package core
 import (
 	"archive/zip"
 	"bytes"
-	_ "embed"
+
+	_ "embed" // embedded dats
 	"encoding/gob"
 	"encoding/xml"
 	"fmt"
@@ -36,10 +37,12 @@ type xmlDAT struct {
 	} `xml:"game"`
 }
 
+// DAT structure
 type DAT struct {
 	Games []Game
 }
 
+// Game definition is DAT
 type Game struct {
 	Name        string
 	CloneOf     string

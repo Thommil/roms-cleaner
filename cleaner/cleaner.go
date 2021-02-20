@@ -42,7 +42,7 @@ func Clean(options core.Options, games []core.Game) error {
 
 	//First if mode copy is active create dst folder
 	if options.CopyMode {
-		options.CleanedDir = filepath.Join(options.RomsDir, core.COPY_DIR)
+		options.CleanedDir = filepath.Join(options.RomsDir, COPY_DIR)
 		if err := os.RemoveAll(options.CleanedDir); err != nil {
 			return err
 		}
@@ -54,8 +54,8 @@ func Clean(options core.Options, games []core.Game) error {
 	}
 
 	//Create image folder if not found
-	if _, err := os.Stat(filepath.Join(options.CleanedDir, core.IMAGE_DIR)); os.IsNotExist(err) {
-		if err = os.Mkdir(filepath.Join(options.CleanedDir, core.IMAGE_DIR), fs.FileMode(0777)); err != nil {
+	if _, err := os.Stat(filepath.Join(options.CleanedDir, IMAGE_DIR)); os.IsNotExist(err) {
+		if err = os.Mkdir(filepath.Join(options.CleanedDir, IMAGE_DIR), fs.FileMode(0777)); err != nil {
 			return err
 		}
 	}

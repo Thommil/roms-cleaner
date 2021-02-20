@@ -3,7 +3,6 @@ package core
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
 
 	"github.com/golang/glog"
 )
@@ -77,9 +76,12 @@ var systemIndex Index
 
 // GetSystem returns a system key based on a key or path
 func GetSystem(keyOrPath string) (System, error) {
+	glog.V(2).Infof("Get : %v", keyOrPath)
+
 	var err error
 	if systemIndex == nil {
-		systemIndex, err = CreateIndex(nil)
+		glog.V(2).Info("create index")
+		systemIndex, err = CreateIndex([]string{"Scanners", "Cleaners"})
 
 		if err != nil {
 			glog.Error(err)
@@ -95,7 +97,7 @@ func GetSystem(keyOrPath string) (System, error) {
 		}
 	}
 
-	key := filepath.Base(strings.ToLower(keyOrPath))
+	key := filepath.Base(keyOrPath)
 
 	result, err := systemIndex.Search(key)
 
@@ -104,10 +106,12 @@ func GetSystem(keyOrPath string) (System, error) {
 		return System{}, err
 	}
 
-	if len(result) == 0 || result[0].Score < 1 {
+	if len(result) == 0 || result[0].Score < 0.9 {
 		glog.Errorf("system %s not found", key)
 		return System{}, fmt.Errorf("system %s not found", key)
 	}
+
+	glog.V(2).Infof("%s -> %s", keyOrPath, result[0].Key)
 
 	return systems[result[0].Key], nil
 }
