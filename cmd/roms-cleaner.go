@@ -40,7 +40,10 @@ func main() {
 
 	// Region
 	flag.Func("region", "privileged region: EUR | USA | JPN (default EUR)", func(reg string) error {
-		region, err = core.GetRegion(reg)
+		regions, err := core.GetRegion(reg)
+		if len(regions) > 0 {
+			region = regions[0]
+		}
 		return err
 	})
 
@@ -72,7 +75,6 @@ func main() {
 	}
 	if system.ID == "" {
 		if system, err = core.GetSystem(romsDir); err != nil {
-			fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
 			os.Exit(1)
 		}
 	}
@@ -102,13 +104,11 @@ func main() {
 
 	// Scan
 	if err = scanner.Scan(options, games); err != nil {
-		fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
 		os.Exit(2)
 	}
 
 	// Clean
 	if err = cleaner.Clean(options, games); err != nil {
-		fmt.Fprintf(os.Stderr, "ERROR: %s\n", err)
 		os.Exit(3)
 	}
 }

@@ -28,11 +28,10 @@ var regionIndex Index
 
 // GetRegion returns a region key baed on a key
 func GetRegion(key string) ([]Region, error) {
-	glog.V(2).Infof("Get : %v", key)
+	glog.V(2).Infof("GetRegion(%s)", key)
 
 	var err error
 	if regionIndex == nil {
-		glog.V(2).Info("create index")
 		regionIndex, err = CreateIndex(nil)
 
 		if err != nil {

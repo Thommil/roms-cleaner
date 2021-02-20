@@ -37,7 +37,7 @@ type bleveIndex struct {
 
 // CreateIndex instanciates a new Index implementation
 func CreateIndex(excludedPaths []string) (Index, error) {
-	glog.V(2).Infof("create new index")
+	glog.V(2).Infof("CreateIndex(%v)", excludedPaths)
 
 	mapping := bleve.NewIndexMapping()
 	if len(excludedPaths) > 0 {
@@ -56,8 +56,6 @@ func CreateIndex(excludedPaths []string) (Index, error) {
 	}
 
 	batch := index.NewBatch()
-
-	glog.V(2).Infof("index created")
 
 	return &bleveIndex{
 		index:  index,
@@ -89,6 +87,7 @@ func pathToMapping(path []string, documentMapping *mapping.DocumentMapping) erro
 }
 
 func (instance *bleveIndex) Add(key string, data interface{}) error {
+	glog.V(5).Infof("Add(%s,%#v)", key, data)
 	err := instance.batch.Index(key, data)
 
 	if err != nil {
@@ -99,8 +98,6 @@ func (instance *bleveIndex) Add(key string, data interface{}) error {
 	instance.addInc++
 
 	if instance.addInc > 1000 {
-		glog.V(2).Infof("flush batch")
-
 		err = instance.index.Batch(instance.batch)
 		instance.addInc = 0
 
@@ -114,7 +111,7 @@ func (instance *bleveIndex) Add(key string, data interface{}) error {
 }
 
 func (instance *bleveIndex) Search(query string) ([]SearchResult, error) {
-	glog.V(2).Infof("new search : %s", query)
+	glog.V(2).Infof("Search(%s)", query)
 
 	if instance.addInc > 0 {
 		err := instance.index.Batch(instance.batch)
@@ -140,7 +137,7 @@ func (instance *bleveIndex) Search(query string) ([]SearchResult, error) {
 		searchResults = append(searchResults, SearchResult{hit.ID, hit.Score})
 	}
 
-	glog.V(2).Infof("result : %v", searchResults)
+	glog.V(2).Infof("Search result: %v", searchResults)
 
 	return searchResults, nil
 }
@@ -154,5 +151,6 @@ func (instance *bleveIndex) Status() SearchStatus {
 }
 
 func (instance *bleveIndex) Close() error {
+	glog.V(2).Info("Close()")
 	return instance.index.Close()
 }

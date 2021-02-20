@@ -76,11 +76,10 @@ var systemIndex Index
 
 // GetSystem returns a system key based on a key or path
 func GetSystem(keyOrPath string) (System, error) {
-	glog.V(2).Infof("Get : %v", keyOrPath)
+	glog.V(2).Infof("GetSystem(%s)", keyOrPath)
 
 	var err error
 	if systemIndex == nil {
-		glog.V(2).Info("create index")
 		systemIndex, err = CreateIndex([]string{"Scanners", "Cleaners"})
 
 		if err != nil {

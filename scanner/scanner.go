@@ -3,6 +3,7 @@ package scanner
 import (
 	"fmt"
 
+	"github.com/golang/glog"
 	"github.com/thommil/roms-cleaner/core"
 )
 
@@ -25,7 +26,10 @@ type Scanner interface {
 
 // Scan is the main entry point for scanner package
 func Scan(options core.Options, games []core.Game) error {
+	glog.V(2).Infof("Scan(%#v)", options)
+
 	if options.System.Scanners == nil || len(options.System.Scanners) == 0 {
+		glog.Errorf("system %s not yet supported", options.System.ID)
 		return fmt.Errorf("system %s not yet supported", options.System.ID)
 	}
 

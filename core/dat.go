@@ -55,6 +55,7 @@ type Game struct {
 
 // FromXML builds a DAT instance from XML dat version
 func (dat *DAT) FromXML(data []byte) error {
+	glog.V(2).Infof("FromXML(bytes[%d])", len(data))
 	var xmlDat xmlDAT
 	if err := xml.Unmarshal(data, &xmlDat); err != nil {
 		glog.Error(err)
@@ -84,11 +85,14 @@ func (dat *DAT) FromXML(data []byte) error {
 		})
 	}
 
+	glog.V(2).Infof("DAT loaded with %d games", len(dat.Games))
+
 	return nil
 }
 
 // FromMemory load current instance with embedded data based on system
 func (dat *DAT) FromMemory(system string) error {
+	glog.V(2).Infof("FromMemory(%s)", system)
 	reader, err := zip.NewReader(bytes.NewReader(datsArchive), int64(len(datsArchive)))
 	if err != nil {
 		glog.Error(err)
@@ -122,11 +126,13 @@ func (dat *DAT) FromMemory(system string) error {
 		}
 	}
 
+	glog.Errorf("no entry found for %s", system)
 	return fmt.Errorf("no entry found for %s", system)
 }
 
 // Serialize DAT
 func (dat *DAT) Serialize() ([]byte, error) {
+	glog.V(2).Infof("Serialize()")
 	buf := new(bytes.Buffer)
 	enc := gob.NewEncoder(buf)
 	if err := enc.Encode(dat); err != nil {
@@ -139,6 +145,7 @@ func (dat *DAT) Serialize() ([]byte, error) {
 
 // Deserialize DAT
 func (dat *DAT) Deserialize(data []byte) error {
+	glog.V(2).Infof("Deserialize()")
 	if data == nil {
 		glog.Error("nil data")
 		return fmt.Errorf("nil data")
