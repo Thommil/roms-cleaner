@@ -61,7 +61,7 @@ func GetRegion(key string) ([]Region, error) {
 		return nil, fmt.Errorf("invalid region %s", key)
 	}
 
-	foundRegions := make([]Region, len(result))
+	foundRegions := make([]Region, 0, len(result))
 	for _, r := range result {
 		foundRegions = append(foundRegions, Region(r.Key))
 	}

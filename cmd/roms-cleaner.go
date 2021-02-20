@@ -100,7 +100,7 @@ func main() {
 		CopyMode:    *copyMode,
 		FailOnError: *failOnError,
 	}
-	games := make([]core.Game, 1000)
+	games := make([]core.GameStatus, 0, 1000)
 
 	// Scan
 	if err = scanner.Scan(options, games); err != nil {

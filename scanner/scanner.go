@@ -2,6 +2,9 @@ package scanner
 
 import (
 	"fmt"
+	"io/fs"
+	"path/filepath"
+	"strings"
 
 	"github.com/golang/glog"
 	"github.com/thommil/roms-cleaner/core"
@@ -15,30 +18,56 @@ var instance = manager{
 	scanners: make(map[string]Scanner),
 }
 
-func registerScanner(system string, scanner Scanner) {
-	instance.scanners[system] = scanner
+func registerScanner(name string, scanner Scanner) {
+	instance.scanners[name] = scanner
 }
 
 // Scanner defines scanners API
 type Scanner interface {
-	Scan(options core.Options, games []core.Game) error
+	// Scan implements scanning by each scanner returnin completion and error
+	Scan(options core.Options, games []core.GameStatus, dat *core.DAT) (bool, error)
 }
 
 // Scan is the main entry point for scanner package
-func Scan(options core.Options, games []core.Game) error {
-	glog.V(2).Infof("Scan(%#v)", options)
+func Scan(options core.Options, games []core.GameStatus) error {
+	glog.V(1).Infof("Scan(%#v)", options)
 
 	if options.System.Scanners == nil || len(options.System.Scanners) == 0 {
 		glog.Errorf("system %s not yet supported", options.System.ID)
 		return fmt.Errorf("system %s not yet supported", options.System.ID)
 	}
 
-	// scanner, found := instance.scanners[options.System.ID]
+	err := filepath.WalkDir(options.RomsDir, func(path string, d fs.DirEntry, err error) error {
+		if d.Type().IsRegular() && strings.Contains(options.System.Exts, filepath.Ext(d.Name())) {
+			games = append(games, core.GameStatus{
+				Source:   path,
+				Errors:   make([]error, 0),
+				Warnings: make([]error, 0),
+			})
+		}
+		return nil
+	})
+	if err != nil {
+		glog.Errorf("failed to list roms: %s", err)
+		return fmt.Errorf("failed to list roms: %s", err)
+	}
 
-	// if !found {
-	// 	return fmt.Errorf("scanner for system %s not found", options.System.ID)
-	// }
+	var dat core.DAT
+	if err := dat.FromMemory(options.System.ID); err != nil {
+		return err
+	}
 
-	// return scanner.Scan(options, games)
+	for _, scanner := range options.System.Scanners {
+		complete, err := instance.scanners[scanner].Scan(options, games, &dat)
+
+		if err != nil {
+			return err
+		}
+
+		if complete {
+			break
+		}
+	}
+
 	return nil
 }
